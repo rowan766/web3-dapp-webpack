@@ -20,6 +20,9 @@ importers:
       lucide-react:
         specifier: ^0.515.0
         version: 0.515.0(react@19.1.0)
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
       react-dom:
         specifier: ^19.1.0
         version: 19.1.0(react@19.1.0)
@@ -105,9 +108,6 @@ importers:
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
-      react:
-        specifier: ^19.1.0
-        version: 19.1.0
       style-loader:
         specifier: ^4.0.0
         version: 4.0.0(webpack@5.99.9)

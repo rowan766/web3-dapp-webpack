@@ -19,9 +19,15 @@ interface CodeDiff {
   }[];
 }
 
+// 获取当前时间
+function getCurrentTime(): string {
+  const now = new Date();
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
 // 初始化Mastra客户端
 const client = new MastraClient({
-  baseUrl: 'https://mastra-workers.row287630.workers.dev'
+  baseUrl: 'https://mastra-workers.row287630.workers.dev',
 });
 
 // 聊天界面组件
@@ -32,8 +38,8 @@ const ChatInterface: React.FC = () => {
       role: 'assistant',
       content:
         '👋 你好！我是Mastra CodeReview助手。\n\n我可以帮助你：\n- 审查代码并找出潜在问题\n- 提供代码改进建议\n- 解释复杂的代码逻辑\n- 提供最佳实践建议\n\n请分享你想要审查的代码，或者提出关于代码的问题。',
-      timestamp: getCurrentTime()
-    }
+      timestamp: getCurrentTime(),
+    },
   ]);
 
   // 存储当前输入
@@ -52,85 +58,11 @@ const ChatInterface: React.FC = () => {
   // 获取代理引用
   const agent = client.getAgent('codeReviewerAgent'); // 替换为你的代理ID
 
-  // 获取当前时间
-  function getCurrentTime(): string {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  }
-
-  // 自动滚动到最新消息
-  useEffect(() => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [messages]);
-
-  // 处理表单提交
-  const handleSubmit = async (): Promise<void> => {
-    if (!input.trim()) return;
-
-    // 用户消息
-    const userMessage: Message = {
-      role: 'user',
-      content: input,
-      timestamp: getCurrentTime()
-    };
-
-    // 更新UI，显示用户消息
-    setMessages((prevMessages) => [...prevMessages, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      // 准备完整的对话历史
-      const conversationHistory: Message[] = [...messages, userMessage];
-
-      // 调用Mastra代理
-      const response = await agent.generate({
-        messages: conversationHistory.map((msg) => ({
-          role: msg.role,
-          content: msg.content
-        }))
-      });
-
-      // 检查是否包含代码审查内容（模拟）
-      const containsCode = input.includes('```') || input.toLowerCase().includes('review') || input.toLowerCase().includes('审查') || input.toLowerCase().includes('代码');
-
-      if (containsCode) {
-        // 模拟生成代码差异
-        generateMockCodeDiff(input);
-      }
-
-      // 更新UI，显示代理回答
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          role: 'assistant',
-          content: response.text,
-          timestamp: getCurrentTime()
-        }
-      ]);
-    } catch (error) {
-      console.error('Error getting response from agent:', error);
-      // 显示错误消息
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        {
-          role: 'assistant',
-          content: '抱歉，发生了错误。请稍后再试。',
-          timestamp: getCurrentTime()
-        }
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   // 生成模拟代码差异
-  const generateMockCodeDiff = (input: string) => {
+  const generateMockCodeDiff = (inputValue: string) => {
     // 从输入中提取代码块
     const codeBlockRegex = /```([\s\S]*?)```/g;
-    const matches = input.match(codeBlockRegex);
+    const matches = inputValue.match(codeBlockRegex);
 
     if (matches && matches.length > 0) {
       const filename = 'example.js'; // 可以从输入中提取或者使用默认值
@@ -148,12 +80,84 @@ const ChatInterface: React.FC = () => {
           { type: 'context', lineNumber: 5, content: '  }' },
           { type: 'removed', lineNumber: 6, content: '  return total;' },
           { type: 'added', lineNumber: 6, content: '  return total.toFixed(2);' },
-          { type: 'context', lineNumber: 7, content: '}' }
-        ]
+          { type: 'context', lineNumber: 7, content: '}' },
+        ],
       };
 
       setCodeDiffs([mockDiff]);
       setReviewMode('diff');
+    }
+  };
+
+  // 自动滚动到最新消息
+  useEffect(() => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  }, [messages]);
+
+  // 处理表单提交
+  const handleSubmit = async (): Promise<void> => {
+    if (!input.trim()) return;
+
+    // 用户消息
+    const userMessage: Message = {
+      role: 'user',
+      content: input,
+      timestamp: getCurrentTime(),
+    };
+
+    // 更新UI，显示用户消息
+    setMessages(prevMessages => [...prevMessages, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      // 准备完整的对话历史
+      const conversationHistory: Message[] = [...messages, userMessage];
+
+      // 调用Mastra代理
+      const response = await agent.generate({
+        messages: conversationHistory.map(msg => ({
+          role: msg.role,
+          content: msg.content,
+        })),
+      });
+
+      // 检查是否包含代码审查内容（模拟）
+      const containsCode =
+        input.includes('```') ||
+        input.toLowerCase().includes('review') ||
+        input.toLowerCase().includes('审查') ||
+        input.toLowerCase().includes('代码');
+
+      if (containsCode) {
+        // 模拟生成代码差异
+        generateMockCodeDiff(input);
+      }
+
+      // 更新UI，显示代理回答
+      setMessages(prevMessages => [
+        ...prevMessages,
+        {
+          role: 'assistant',
+          content: response.text,
+          timestamp: getCurrentTime(),
+        },
+      ]);
+    } catch (error) {
+      console.error('Error getting response from agent:', error);
+      // 显示错误消息
+      setMessages(prevMessages => [
+        ...prevMessages,
+        {
+          role: 'assistant',
+          content: '抱歉，发生了错误。请稍后再试。',
+          timestamp: getCurrentTime(),
+        },
+      ]);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -192,7 +196,9 @@ const ChatInterface: React.FC = () => {
           <div key={lineIndex} className={`diff-line diff-${change.type}`}>
             <span className="diff-line-number">{change.lineNumber}</span>
             <span className="diff-line-content">
-              <span className="diff-prefix">{change.type === 'added' ? '+ ' : change.type === 'removed' ? '- ' : '  '}</span>
+              <span className="diff-prefix">
+                {change.type === 'added' ? '+ ' : change.type === 'removed' ? '- ' : '  '}
+              </span>
               {change.content}
             </span>
           </div>
@@ -220,7 +226,7 @@ const ChatInterface: React.FC = () => {
                 {children}
               </code>
             );
-          }
+          },
         }}
       >
         {content}
@@ -248,7 +254,10 @@ const ChatInterface: React.FC = () => {
             </div>
           ) : (
             messages.map((message, index) => (
-              <div key={index} className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}>
+              <div
+                key={index}
+                className={`message ${message.role === 'user' ? 'user-message' : 'assistant-message'}`}
+              >
                 <div className="message-content">
                   {renderMessageContent(message.content)}
                   {message.timestamp && <div className="message-meta">{message.timestamp}</div>}
@@ -280,8 +289,20 @@ const ChatInterface: React.FC = () => {
 
       {/* 输入区域 */}
       <div className="chat-input-form">
-        <input type="text" value={input} onChange={handleInputChange} onKeyDown={handleKeyDown} placeholder="输入你的问题或粘贴代码片段..." disabled={isLoading} className="chat-input" />
-        <button onClick={handleSubmit} disabled={isLoading || !input.trim()} className="send-button">
+        <input
+          type="text"
+          value={input}
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          placeholder="输入你的问题或粘贴代码片段..."
+          disabled={isLoading}
+          className="chat-input"
+        />
+        <button
+          onClick={handleSubmit}
+          disabled={isLoading || !input.trim()}
+          className="send-button"
+        >
           发送
         </button>
       </div>
