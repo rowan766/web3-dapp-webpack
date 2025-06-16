@@ -9,7 +9,6 @@ const _modeflag = _mode === 'production' ? true : false;
 
 const { ThemedProgressPlugin } = require('themed-progress-plugin');
 
-
 const webpackBaseConfig={
     entry:{
         main: resolve('src/index.tsx'),
@@ -62,7 +61,8 @@ const webpackBaseConfig={
         },
         extensions: ['.js', '.ts', '.tsx', '.jsx', '.css'],
         fallback: {
-        // stream: require.resolve('stream-browserify'),
+            // 只保留必要的 fallback
+            "stream": require.resolve("stream-browserify"),
         },
     },
     plugins:[
