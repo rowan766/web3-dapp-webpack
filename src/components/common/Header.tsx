@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Home, FileText, BookOpen, Menu, X, Code, Wallet } from 'lucide-react';
+import { Home, FileText, BookOpen, Menu, X, Code, Wallet,Coins  } from 'lucide-react';
 import { useWeb3React } from '@web3-react/core';
 import { metaMask } from '@/connections/connectors';
 
@@ -12,6 +12,7 @@ const Header = () => {
   const navItems = [
     { path: '/', label: '首页', icon: Home },
     { path: '/abis', label: 'ABIs', icon: FileText },
+    { path: '/ydcoin', label: '代币', icon: Coins },
     { path: '/course', label: '课程', icon: BookOpen },
     { path: '/code', label: '代码审查', icon: Code },
   ];
