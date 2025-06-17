@@ -7,13 +7,14 @@
     "client:dev": "webpack --mode development",
     "client:server": "webpack serve --mode development",
     "client:prod": "webpack --mode production",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "lint:fix": "tsc --noEmit & eslint ./src --ext .ts,.tsx,.js --fix",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "generate-types": "typechain --target=ethers-v5 'build/contracts/*.json'",
     "test:e2e": "cypress open",
     "test:e2e:run": "cypress run",
-    "test:e2e:headed": "cypress run --headed"
+    "test:e2e:headed": "cypress run --headed",
+    "test": "jest --collectCoverage --reporters default jest-stare",
+    "test:ui": "majestic"
   },
   "repository": {
     "type": "git",
@@ -29,7 +30,9 @@
   "homepage": "https://github.com/rowan766/webpack5-cli#readme",
   "devDependencies": {
     "@soda/friendly-errors-webpack-plugin": "^1.8.1",
+    "@swc/jest": "^0.2.38",
     "@tailwindcss/postcss": "latest",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.3",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
@@ -53,6 +56,8 @@
     "html-webpack-plugin": "^5.6.3",
     "https-browserify": "^1.0.0",
     "jest": "^30.0.0",
+    "jest-stare": "^2.5.2",
+    "majestic": "^1.8.1",
     "mini-css-extract-plugin": "^2.9.2",
     "node-notifier": "^10.0.1",
     "os-browserify": "^0.3.0",
