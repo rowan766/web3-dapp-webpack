@@ -6,4 +6,4 @@ const [metaMask, metaMaskHooks] = initializeConnector((actions) => new MetaMask(
 
 export { metaMask, metaMaskHooks };
 
-export const connectors = [[metaMask, metaMaskHooks]];
+export const connectors = [[metaMask, metaMaskHooks]] as const;
