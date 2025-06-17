@@ -10,7 +10,10 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint:fix": "tsc --noEmit & eslint ./src --ext .ts,.tsx,.js --fix",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "generate-types": "typechain --target=ethers-v5 'build/contracts/*.json'"
+    "generate-types": "typechain --target=ethers-v5 'build/contracts/*.json'",
+    "test:e2e": "cypress open",
+    "test:e2e:run": "cypress run",
+    "test:e2e:headed": "cypress run --headed"
   },
   "repository": {
     "type": "git",
@@ -39,6 +42,7 @@
     "crypto-browserify": "^3.12.1",
     "css-loader": "^7.1.2",
     "css-minimizer-webpack-plugin": "^7.0.2",
+    "cypress": "^14.4.1",
     "dotenv": "^16.5.0",
     "eslint-config-airbnb-typescript": "^18.0.0",
     "eslint-config-prettier": "^10.1.5",
@@ -82,8 +86,8 @@
     "immer": "^10.1.1",
     "install": "^0.13.0",
     "lucide-react": "^0.515.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^7.6.2",
     "swc-loader": "^0.2.6",
